@@ -1999,6 +1999,14 @@ describe('network stubbing', { retries: 2 }, function () {
       cy.route2(url).as('image')
       .then(() => {
         $.get({ url, cache: true })
+      })
+      .then(() => {
+        if (Cypress.isBrowser('firefox')) {
+          // strangely, Firefox requires some time to be waited before the first image response will be cached
+          cy.wait(1000)
+        }
+      })
+      .then(() => {
         $.get({ url, cache: true })
       })
       .wait('@image').its('response.statusCode').should('eq', 200)
